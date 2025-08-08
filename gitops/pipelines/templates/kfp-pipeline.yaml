@@ -1,0 +1,7 @@
+apiVersion: pipelines.kubeflow.org/v2beta1
+kind: Pipeline
+metadata:
+  name: kfp-upsert-pl
+  namespace: rag-base
+spec:
+  displayName: kfp-upsert-pl 
