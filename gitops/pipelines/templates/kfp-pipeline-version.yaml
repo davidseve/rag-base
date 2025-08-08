@@ -105,7 +105,7 @@ spec:
           container:
             args:
               - --executor_input
-              - "{{$}}"
+              - '{{`{{$}}`}}'
               - --function_to_execute
               - add_chunks_to_milvus
             command:
@@ -129,7 +129,7 @@ spec:
           container:
             args:
               - --executor_input
-              - "{{$}}"
+              - '{{`{{$}}`}}'
               - --function_to_execute
               - docling_chunker
             command:
@@ -153,7 +153,7 @@ spec:
           container:
             args:
               - --executor_input
-              - "{{$}}"
+              - '{{`{{$}}`}}'
               - --function_to_execute
               - docling_converter
             command:
@@ -177,7 +177,7 @@ spec:
           container:
             args:
               - --executor_input
-              - "{{$}}"
+              - '{{`{{$}}`}}'
               - --function_to_execute
               - s3_sync
             command:
@@ -201,7 +201,7 @@ spec:
           container:
             args:
               - --executor_input
-              - "{{$}}"
+              - '{{`{{$}}`}}'
               - --function_to_execute
               - setup_storage
             command:
