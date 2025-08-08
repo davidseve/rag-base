@@ -11,7 +11,7 @@ spec:
   pipelineName: kfp-upsert-pl
   displayName: kfp-upsert-pl-v1
   description: This is the first version of the pipeline.
-  pipeline_spec:
+  pipelineSpec:
     components:
       comp-add-chunks-to-milvus:
         executorLabel: exec-add-chunks-to-milvus
@@ -362,7 +362,7 @@ spec:
             parameterType: NUMBER_INTEGER
     schemaVersion: 2.1.0
     sdkVersion: kfp-2.10.1
-  platform_spec:
+  platformSpec:
     platforms:
       kubernetes:
         deploymentSpec:
