@@ -174,30 +174,15 @@ spec:
             - kfp.dsl.executor_main
             env:
             - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: aws-connection-pipelines
-                  key: AWS_ACCESS_KEY_ID
+              value: "minio"
             - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: aws-connection-pipelines
-                  key: AWS_SECRET_ACCESS_KEY
+              value: "minio123"
             - name: AWS_DEFAULT_REGION
-              valueFrom:
-                secretKeyRef:
-                  name: aws-connection-pipelines
-                  key: AWS_DEFAULT_REGION
+              value: "none"
             - name: AWS_S3_BUCKET
-              valueFrom:
-                secretKeyRef:
-                  name: aws-connection-pipelines
-                  key: AWS_S3_BUCKET
+              value: "pipelines"
             - name: AWS_S3_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  name: aws-connection-pipelines
-                  key: AWS_S3_ENDPOINT
+              value: "http://minio.ic-shared-minio.svc:9000"
             image: quay.io/atarazana/s3_sync:v1.0.5
         exec-setup-storage:
           container:
