@@ -172,9 +172,32 @@ spec:
             - python3
             - -m
             - kfp.dsl.executor_main
-            envFrom:
-            - secretRef:
-                name: aws-connection-pipelines
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-pipelines
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-pipelines
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-pipelines
+                  key: AWS_DEFAULT_REGION
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-pipelines
+                  key: AWS_S3_BUCKET
+            - name: AWS_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-pipelines
+                  key: AWS_S3_ENDPOINT
             image: quay.io/atarazana/s3_sync:v1.0.5
         exec-setup-storage:
           container:
