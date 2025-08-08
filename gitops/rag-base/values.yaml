@@ -8,7 +8,7 @@ instanceName: rag-base
 argocdNamespace: openshift-gitops
 
 vcs:
-  uri: https://github.com/alpha-hack-program/rag-base.git
+  uri: https://github.com/davidseve/rag-base.git
   ref: main
   name: alpha-hack-program/rag-base
 
@@ -113,7 +113,7 @@ pipelinesApplication:
   path: gitops/pipelines
   targetRevision: main
   vcs: # This is the VCS configuration for the KFP pipelines code
-    uri: https://github.com/alpha-hack-program/rag-utils.git
+    uri: https://github.com/davidseve/rag-utils.git
     ref: main
     name: alpha-hack-program/rag-utils
     dir: pipelines
