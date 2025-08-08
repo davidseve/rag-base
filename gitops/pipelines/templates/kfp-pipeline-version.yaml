@@ -3,6 +3,8 @@ kind: PipelineVersion
 metadata:
   name: v1 
   namespace: rag-base
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
   labels:
     pipelines.kubeflow.org/pipeline: kfp-upsert-pl
 spec:
