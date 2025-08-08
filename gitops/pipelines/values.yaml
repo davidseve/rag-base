@@ -4,7 +4,7 @@ partOf: rag-base
 argocdNamespace: openshift-gitops
 
 vcs:
-  uri: https://github.com/alpha-hack-program/rag-utils.git
+  uri: https://github.com/davidseve/rag-utils.git
   ref: main
   name: alpha-hack-program/rag-utils
   dir: pipelines

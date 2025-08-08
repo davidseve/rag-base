@@ -14,7 +14,7 @@ baseImage:
 workingDir: /app
 
 vcs:
-  uri: https://github.com/alpha-hack-program/rag-router.git
+  uri: https://github.com/davidseve/rag-router.git
   ref: main
   name: alpha-hack-program/rag-router
   path: .
