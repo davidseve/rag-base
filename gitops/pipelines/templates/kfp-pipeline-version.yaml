@@ -11,7 +11,7 @@ spec:
   pipelineName: kfp-upsert-pl
   displayName: kfp-upsert-pl-v1
   description: This is the first version of the pipeline.
-  pipelineSpec:
+  pipeline_spec:
     components:
       comp-add-chunks-to-milvus:
         executorLabel: exec-add-chunks-to-milvus
@@ -96,7 +96,7 @@ spec:
             size_in_gi:
               parameterType: NUMBER_INTEGER
             storage_class:
-              defaultValue: ''
+              defaultValue: ""
               isOptional: true
               parameterType: STRING
     deploymentSpec:
@@ -104,103 +104,121 @@ spec:
         exec-add-chunks-to-milvus:
           container:
             args:
-            - --executor_input
-            - '{{`{{$}}`}}'
-            - --function_to_execute
-            - add_chunks_to_milvus
+              - --executor_input
+              - "{{$}}"
+              - --function_to_execute
+              - add_chunks_to_milvus
             command:
-            - sh
-            - -c
-            - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
-              \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
-              \ python3 -m pip install --quiet --no-warn-script-location 'docling-core==2.31.0'\
-              \ 'pymilvus==2.5.8' 'requests==2.32.3' && \"$0\" \"$@\"\n"
-            - python3
-            - -m
-            - kfp.dsl.executor_main
+              - sh
+              - -c
+              - >
+                
+                if ! [ -x "$(command -v pip)" ]; then
+                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                fi
+
+
+                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                --no-warn-script-location 'docling-core==2.31.0' 'pymilvus==2.5.8'
+                'requests==2.32.3' && "$0" "$@"
+              - python3
+              - -m
+              - kfp.dsl.executor_main
             image: quay.io/atarazana/add_chunks_to_milvus:v1.0.18
         exec-docling-chunker:
           container:
             args:
-            - --executor_input
-            - '{{`{{$}}`}}'
-            - --function_to_execute
-            - docling_chunker
+              - --executor_input
+              - "{{$}}"
+              - --function_to_execute
+              - docling_chunker
             command:
-            - sh
-            - -c
-            - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
-              \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
-              \ python3 -m pip install --quiet --no-warn-script-location 'docling[vlm]==2.31.0'\
-              \ 'load_dotenv==0.1.0' && \"$0\" \"$@\"\n"
-            - python3
-            - -m
-            - kfp.dsl.executor_main
+              - sh
+              - -c
+              - >
+                
+                if ! [ -x "$(command -v pip)" ]; then
+                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                fi
+
+
+                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                --no-warn-script-location 'docling[vlm]==2.31.0'
+                'load_dotenv==0.1.0' && "$0" "$@"
+              - python3
+              - -m
+              - kfp.dsl.executor_main
             image: quay.io/atarazana/docling_chunker:v1.0.8
         exec-docling-converter:
           container:
             args:
-            - --executor_input
-            - '{{`{{$}}`}}'
-            - --function_to_execute
-            - docling_converter
+              - --executor_input
+              - "{{$}}"
+              - --function_to_execute
+              - docling_converter
             command:
-            - sh
-            - -c
-            - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
-              \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
-              \ python3 -m pip install --quiet --no-warn-script-location 'docling[vlm]==2.31.0'\
-              \ 'load_dotenv==0.1.0' && \"$0\" \"$@\"\n"
-            - python3
-            - -m
-            - kfp.dsl.executor_main
+              - sh
+              - -c
+              - >
+                
+                if ! [ -x "$(command -v pip)" ]; then
+                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                fi
+
+
+                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                --no-warn-script-location 'docling[vlm]==2.31.0'
+                'load_dotenv==0.1.0' && "$0" "$@"
+              - python3
+              - -m
+              - kfp.dsl.executor_main
             image: quay.io/atarazana/docling_converter:v1.0.9
         exec-s3-sync:
           container:
             args:
-            - --executor_input
-            - '{{`{{$}}`}}'
-            - --function_to_execute
-            - s3_sync
+              - --executor_input
+              - "{{$}}"
+              - --function_to_execute
+              - s3_sync
             command:
-            - sh
-            - -c
-            - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
-              \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
-              \ python3 -m pip install --quiet --no-warn-script-location 'load_dotenv==0.1.0'\
-              \ 'botocore==1.35.54' 'boto3==1.35.54' && \"$0\" \"$@\"\n"
-            - python3
-            - -m
-            - kfp.dsl.executor_main
-            env:
-            - name: AWS_ACCESS_KEY_ID
-              value: "minio"
-            - name: AWS_SECRET_ACCESS_KEY
-              value: "minio123"
-            - name: AWS_DEFAULT_REGION
-              value: "none"
-            - name: AWS_S3_BUCKET
-              value: "pipelines"
-            - name: AWS_S3_ENDPOINT
-              value: "http://minio.ic-shared-minio.svc:9000"
+              - sh
+              - -c
+              - >
+                
+                if ! [ -x "$(command -v pip)" ]; then
+                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                fi
+
+
+                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                --no-warn-script-location 'load_dotenv==0.1.0' 'botocore==1.35.54'
+                'boto3==1.35.54' && "$0" "$@"
+              - python3
+              - -m
+              - kfp.dsl.executor_main
             image: quay.io/atarazana/s3_sync:v1.0.5
         exec-setup-storage:
           container:
             args:
-            - --executor_input
-            - '{{`{{$}}`}}'
-            - --function_to_execute
-            - setup_storage
+              - --executor_input
+              - "{{$}}"
+              - --function_to_execute
+              - setup_storage
             command:
-            - sh
-            - -c
-            - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
-              \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
-              \ python3 -m pip install --quiet --no-warn-script-location 'kubernetes==23.6.0'\
-              \ && \"$0\" \"$@\"\n"
-            - python3
-            - -m
-            - kfp.dsl.executor_main
+              - sh
+              - -c
+              - >
+                
+                if ! [ -x "$(command -v pip)" ]; then
+                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                fi
+
+
+                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                --no-warn-script-location 'kubernetes==23.6.0' && "$0" "$@"
+              - python3
+              - -m
+              - kfp.dsl.executor_main
             image: quay.io/atarazana/setup_storage:v1.0.1
     pipelineInfo:
       name: upsert-documents-to-milvus
@@ -212,7 +230,7 @@ spec:
             componentRef:
               name: comp-add-chunks-to-milvus
             dependentTasks:
-            - docling-chunker
+              - docling-chunker
             inputs:
               parameters:
                 input_dir_name:
@@ -228,7 +246,7 @@ spec:
             componentRef:
               name: comp-docling-chunker
             dependentTasks:
-            - docling-converter
+              - docling-converter
             inputs:
               parameters:
                 input_dir_name:
@@ -250,7 +268,7 @@ spec:
             componentRef:
               name: comp-docling-converter
             dependentTasks:
-            - s3-sync
+              - s3-sync
             inputs:
               parameters:
                 input_dir_name:
@@ -266,7 +284,7 @@ spec:
             componentRef:
               name: comp-s3-sync
             dependentTasks:
-            - setup-storage
+              - setup-storage
             inputs:
               parameters:
                 folder:
@@ -315,7 +333,7 @@ spec:
             isOptional: true
             parameterType: STRING
           documents_pvc_size_in_gi:
-            defaultValue: 10.0
+            defaultValue: 10
             isOptional: true
             parameterType: NUMBER_INTEGER
           force:
@@ -339,8 +357,85 @@ spec:
             isOptional: true
             parameterType: STRING
           tokenizer_max_tokens:
-            defaultValue: 476.0
+            defaultValue: 476
             isOptional: true
             parameterType: NUMBER_INTEGER
     schemaVersion: 2.1.0
     sdkVersion: kfp-2.10.1
+  platform_spec:
+    platforms:
+      kubernetes:
+        deploymentSpec:
+          executors:
+            exec-add-chunks-to-milvus:
+              pvcMount:
+                - componentInputParameter: documents_pvc_name
+                  mountPath: /opt/app-root/src
+                  pvcNameParameter:
+                    componentInputParameter: documents_pvc_name
+              secretAsEnv:
+                - keyToEnv:
+                    - envVar: MILVUS_DATABASE
+                      secretKey: MILVUS_DATABASE
+                    - envVar: MILVUS_HOST
+                      secretKey: MILVUS_HOST
+                    - envVar: MILVUS_PORT
+                      secretKey: MILVUS_PORT
+                    - envVar: MILVUS_USERNAME
+                      secretKey: MILVUS_USERNAME
+                    - envVar: MILVUS_PASSWORD
+                      secretKey: MILVUS_PASSWORD
+                  secretName: milvus-connection-documents
+                  secretNameParameter:
+                    runtimeValue:
+                      constant: milvus-connection-documents
+                - keyToEnv:
+                    - envVar: EMBEDDING_MAP_PATH
+                      secretKey: EMBEDDING_MAP_PATH
+                    - envVar: EMBEDDINGS_DEFAULT_MODEL
+                      secretKey: EMBEDDINGS_DEFAULT_MODEL
+                  secretName: rag-pipelines-env
+                  secretNameParameter:
+                    runtimeValue:
+                      constant: rag-pipelines-env
+              secretAsVolume:
+                - mountPath: /opt/app-root/src/data/
+                  optional: false
+                  secretName: rag-pipelines-files
+                  secretNameParameter:
+                    runtimeValue:
+                      constant: rag-pipelines-files
+            exec-docling-chunker:
+              pvcMount:
+                - componentInputParameter: documents_pvc_name
+                  mountPath: /opt/app-root/src
+                  pvcNameParameter:
+                    componentInputParameter: documents_pvc_name
+            exec-docling-converter:
+              pvcMount:
+                - componentInputParameter: documents_pvc_name
+                  mountPath: /opt/app-root/src
+                  pvcNameParameter:
+                    componentInputParameter: documents_pvc_name
+            exec-s3-sync:
+              pvcMount:
+                - componentInputParameter: documents_pvc_name
+                  mountPath: /opt/app-root/src
+                  pvcNameParameter:
+                    componentInputParameter: documents_pvc_name
+              secretAsEnv:
+                - keyToEnv:
+                    - envVar: AWS_ACCESS_KEY_ID
+                      secretKey: AWS_ACCESS_KEY_ID
+                    - envVar: AWS_SECRET_ACCESS_KEY
+                      secretKey: AWS_SECRET_ACCESS_KEY
+                    - envVar: AWS_DEFAULT_REGION
+                      secretKey: AWS_DEFAULT_REGION
+                    - envVar: AWS_S3_BUCKET
+                      secretKey: AWS_S3_BUCKET
+                    - envVar: AWS_S3_ENDPOINT
+                      secretKey: AWS_S3_ENDPOINT
+                  secretName: aws-connection-documents
+                  secretNameParameter:
+                    runtimeValue:
+                      constant: aws-connection-documents
