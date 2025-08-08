@@ -12,430 +12,431 @@ spec:
   displayName: kfp-upsert-pl-v1
   description: This is the first version of the pipeline.
   pipelineSpec:
-    components:
-      comp-add-chunks-to-milvus:
-        executorLabel: exec-add-chunks-to-milvus
+    pipeline_spec:
+      components:
+        comp-add-chunks-to-milvus:
+          executorLabel: exec-add-chunks-to-milvus
+          inputDefinitions:
+            parameters:
+              input_dir_name:
+                parameterType: STRING
+              milvus_collection_name:
+                parameterType: STRING
+              root_mount_path:
+                parameterType: STRING
+          outputDefinitions:
+            parameters:
+              Output:
+                parameterType: STRING
+        comp-docling-chunker:
+          executorLabel: exec-docling-chunker
+          inputDefinitions:
+            parameters:
+              input_dir_name:
+                parameterType: STRING
+              merge_peers:
+                defaultValue: true
+                isOptional: true
+                parameterType: BOOLEAN
+              output_dir_name:
+                parameterType: STRING
+              root_mount_path:
+                parameterType: STRING
+              tokenizer_embed_model_id:
+                isOptional: true
+                parameterType: STRING
+              tokenizer_max_tokens:
+                isOptional: true
+                parameterType: NUMBER_INTEGER
+          outputDefinitions:
+            parameters:
+              Output:
+                parameterType: STRING
+        comp-docling-converter:
+          executorLabel: exec-docling-converter
+          inputDefinitions:
+            parameters:
+              input_dir_name:
+                parameterType: STRING
+              output_dir_name:
+                parameterType: STRING
+              root_mount_path:
+                parameterType: STRING
+          outputDefinitions:
+            parameters:
+              Output:
+                parameterType: STRING
+        comp-s3-sync:
+          executorLabel: exec-s3-sync
+          inputDefinitions:
+            parameters:
+              folder:
+                parameterType: STRING
+              force:
+                defaultValue: false
+                isOptional: true
+                parameterType: BOOLEAN
+              local_folder:
+                parameterType: STRING
+              root_mount_path:
+                parameterType: STRING
+          outputDefinitions:
+            parameters:
+              Output:
+                parameterType: STRING
+        comp-setup-storage:
+          executorLabel: exec-setup-storage
+          inputDefinitions:
+            parameters:
+              access_mode:
+                defaultValue: ReadWriteOnce
+                isOptional: true
+                parameterType: STRING
+              pvc_name:
+                parameterType: STRING
+              size_in_gi:
+                parameterType: NUMBER_INTEGER
+              storage_class:
+                defaultValue: ""
+                isOptional: true
+                parameterType: STRING
+      deploymentSpec:
+        executors:
+          exec-add-chunks-to-milvus:
+            container:
+              args:
+                - --executor_input
+                - "{{$}}"
+                - --function_to_execute
+                - add_chunks_to_milvus
+              command:
+                - sh
+                - -c
+                - >
+                  
+                  if ! [ -x "$(command -v pip)" ]; then
+                      python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                  fi
+
+
+                  PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                  --no-warn-script-location 'docling-core==2.31.0' 'pymilvus==2.5.8'
+                  'requests==2.32.3' && "$0" "$@"
+                - python3
+                - -m
+                - kfp.dsl.executor_main
+              image: quay.io/atarazana/add_chunks_to_milvus:v1.0.18
+          exec-docling-chunker:
+            container:
+              args:
+                - --executor_input
+                - "{{$}}"
+                - --function_to_execute
+                - docling_chunker
+              command:
+                - sh
+                - -c
+                - >
+                  
+                  if ! [ -x "$(command -v pip)" ]; then
+                      python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                  fi
+
+
+                  PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                  --no-warn-script-location 'docling[vlm]==2.31.0'
+                  'load_dotenv==0.1.0' && "$0" "$@"
+                - python3
+                - -m
+                - kfp.dsl.executor_main
+              image: quay.io/atarazana/docling_chunker:v1.0.8
+          exec-docling-converter:
+            container:
+              args:
+                - --executor_input
+                - "{{$}}"
+                - --function_to_execute
+                - docling_converter
+              command:
+                - sh
+                - -c
+                - >
+                  
+                  if ! [ -x "$(command -v pip)" ]; then
+                      python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                  fi
+
+
+                  PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                  --no-warn-script-location 'docling[vlm]==2.31.0'
+                  'load_dotenv==0.1.0' && "$0" "$@"
+                - python3
+                - -m
+                - kfp.dsl.executor_main
+              image: quay.io/atarazana/docling_converter:v1.0.9
+          exec-s3-sync:
+            container:
+              args:
+                - --executor_input
+                - "{{$}}"
+                - --function_to_execute
+                - s3_sync
+              command:
+                - sh
+                - -c
+                - >
+                  
+                  if ! [ -x "$(command -v pip)" ]; then
+                      python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                  fi
+
+
+                  PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                  --no-warn-script-location 'load_dotenv==0.1.0' 'botocore==1.35.54'
+                  'boto3==1.35.54' && "$0" "$@"
+                - python3
+                - -m
+                - kfp.dsl.executor_main
+              image: quay.io/atarazana/s3_sync:v1.0.5
+          exec-setup-storage:
+            container:
+              args:
+                - --executor_input
+                - "{{$}}"
+                - --function_to_execute
+                - setup_storage
+              command:
+                - sh
+                - -c
+                - >
+                  
+                  if ! [ -x "$(command -v pip)" ]; then
+                      python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+                  fi
+
+
+                  PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
+                  --no-warn-script-location 'kubernetes==23.6.0' && "$0" "$@"
+                - python3
+                - -m
+                - kfp.dsl.executor_main
+              image: quay.io/atarazana/setup_storage:v1.0.1
+      pipelineInfo:
+        name: upsert-documents-to-milvus
+      root:
+        dag:
+          tasks:
+            add-chunks-to-milvus:
+              cachingOptions: {}
+              componentRef:
+                name: comp-add-chunks-to-milvus
+              dependentTasks:
+                - docling-chunker
+              inputs:
+                parameters:
+                  input_dir_name:
+                    componentInputParameter: chunks_dir_name
+                  milvus_collection_name:
+                    componentInputParameter: milvus_collection_name
+                  root_mount_path:
+                    componentInputParameter: root_mount_path
+              taskInfo:
+                name: insert_chunks
+            docling-chunker:
+              cachingOptions: {}
+              componentRef:
+                name: comp-docling-chunker
+              dependentTasks:
+                - docling-converter
+              inputs:
+                parameters:
+                  input_dir_name:
+                    componentInputParameter: converted_dir_name
+                  merge_peers:
+                    componentInputParameter: merge_peers
+                  output_dir_name:
+                    componentInputParameter: chunks_dir_name
+                  root_mount_path:
+                    componentInputParameter: root_mount_path
+                  tokenizer_embed_model_id:
+                    componentInputParameter: tokenizer_embed_model_id
+                  tokenizer_max_tokens:
+                    componentInputParameter: tokenizer_max_tokens
+              taskInfo:
+                name: docling_chunker
+            docling-converter:
+              cachingOptions: {}
+              componentRef:
+                name: comp-docling-converter
+              dependentTasks:
+                - s3-sync
+              inputs:
+                parameters:
+                  input_dir_name:
+                    componentInputParameter: documents_dir_name
+                  output_dir_name:
+                    componentInputParameter: converted_dir_name
+                  root_mount_path:
+                    componentInputParameter: root_mount_path
+              taskInfo:
+                name: docling_converter
+            s3-sync:
+              cachingOptions: {}
+              componentRef:
+                name: comp-s3-sync
+              dependentTasks:
+                - setup-storage
+              inputs:
+                parameters:
+                  folder:
+                    componentInputParameter: documents_bucket_folder
+                  force:
+                    componentInputParameter: force
+                  local_folder:
+                    componentInputParameter: documents_dir_name
+                  root_mount_path:
+                    componentInputParameter: root_mount_path
+              taskInfo:
+                name: s3_sync
+            setup-storage:
+              cachingOptions:
+                enableCache: true
+              componentRef:
+                name: comp-setup-storage
+              inputs:
+                parameters:
+                  pvc_name:
+                    componentInputParameter: documents_pvc_name
+                  size_in_gi:
+                    componentInputParameter: documents_pvc_size_in_gi
+              taskInfo:
+                name: setup_storage
         inputDefinitions:
           parameters:
-            input_dir_name:
-              parameterType: STRING
-            milvus_collection_name:
-              parameterType: STRING
-            root_mount_path:
-              parameterType: STRING
-        outputDefinitions:
-          parameters:
-            Output:
-              parameterType: STRING
-      comp-docling-chunker:
-        executorLabel: exec-docling-chunker
-        inputDefinitions:
-          parameters:
-            input_dir_name:
-              parameterType: STRING
-            merge_peers:
-              defaultValue: true
-              isOptional: true
-              parameterType: BOOLEAN
-            output_dir_name:
-              parameterType: STRING
-            root_mount_path:
-              parameterType: STRING
-            tokenizer_embed_model_id:
+            chunks_dir_name:
+              defaultValue: chunks
               isOptional: true
               parameterType: STRING
-            tokenizer_max_tokens:
+            converted_dir_name:
+              defaultValue: converted
+              isOptional: true
+              parameterType: STRING
+            documents_bucket_folder:
+              defaultValue: documents
+              isOptional: true
+              parameterType: STRING
+            documents_dir_name:
+              defaultValue: documents
+              isOptional: true
+              parameterType: STRING
+            documents_pvc_name:
+              defaultValue: documents-pvc
+              isOptional: true
+              parameterType: STRING
+            documents_pvc_size_in_gi:
+              defaultValue: 10
               isOptional: true
               parameterType: NUMBER_INTEGER
-        outputDefinitions:
-          parameters:
-            Output:
-              parameterType: STRING
-      comp-docling-converter:
-        executorLabel: exec-docling-converter
-        inputDefinitions:
-          parameters:
-            input_dir_name:
-              parameterType: STRING
-            output_dir_name:
-              parameterType: STRING
-            root_mount_path:
-              parameterType: STRING
-        outputDefinitions:
-          parameters:
-            Output:
-              parameterType: STRING
-      comp-s3-sync:
-        executorLabel: exec-s3-sync
-        inputDefinitions:
-          parameters:
-            folder:
-              parameterType: STRING
             force:
               defaultValue: false
               isOptional: true
               parameterType: BOOLEAN
-            local_folder:
+            merge_peers:
+              defaultValue: true
+              isOptional: true
+              parameterType: BOOLEAN
+            milvus_collection_name:
+              defaultValue: document_chunks
+              isOptional: true
               parameterType: STRING
             root_mount_path:
-              parameterType: STRING
-        outputDefinitions:
-          parameters:
-            Output:
-              parameterType: STRING
-      comp-setup-storage:
-        executorLabel: exec-setup-storage
-        inputDefinitions:
-          parameters:
-            access_mode:
-              defaultValue: ReadWriteOnce
+              defaultValue: /opt/app-root/src
               isOptional: true
               parameterType: STRING
-            pvc_name:
+            tokenizer_embed_model_id:
+              defaultValue: intfloat/multilingual-e5-large
+              isOptional: true
               parameterType: STRING
-            size_in_gi:
+            tokenizer_max_tokens:
+              defaultValue: 476
+              isOptional: true
               parameterType: NUMBER_INTEGER
-            storage_class:
-              defaultValue: ""
-              isOptional: true
-              parameterType: STRING
-    deploymentSpec:
-      executors:
-        exec-add-chunks-to-milvus:
-          container:
-            args:
-              - --executor_input
-              - '{{`{{$}}`}}'
-              - --function_to_execute
-              - add_chunks_to_milvus
-            command:
-              - sh
-              - -c
-              - >
-                
-                if ! [ -x "$(command -v pip)" ]; then
-                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
-                fi
-
-
-                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
-                --no-warn-script-location 'docling-core==2.31.0' 'pymilvus==2.5.8'
-                'requests==2.32.3' && "$0" "$@"
-              - python3
-              - -m
-              - kfp.dsl.executor_main
-            image: quay.io/atarazana/add_chunks_to_milvus:v1.0.18
-        exec-docling-chunker:
-          container:
-            args:
-              - --executor_input
-              - '{{`{{$}}`}}'
-              - --function_to_execute
-              - docling_chunker
-            command:
-              - sh
-              - -c
-              - >
-                
-                if ! [ -x "$(command -v pip)" ]; then
-                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
-                fi
-
-
-                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
-                --no-warn-script-location 'docling[vlm]==2.31.0'
-                'load_dotenv==0.1.0' && "$0" "$@"
-              - python3
-              - -m
-              - kfp.dsl.executor_main
-            image: quay.io/atarazana/docling_chunker:v1.0.8
-        exec-docling-converter:
-          container:
-            args:
-              - --executor_input
-              - '{{`{{$}}`}}'
-              - --function_to_execute
-              - docling_converter
-            command:
-              - sh
-              - -c
-              - >
-                
-                if ! [ -x "$(command -v pip)" ]; then
-                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
-                fi
-
-
-                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
-                --no-warn-script-location 'docling[vlm]==2.31.0'
-                'load_dotenv==0.1.0' && "$0" "$@"
-              - python3
-              - -m
-              - kfp.dsl.executor_main
-            image: quay.io/atarazana/docling_converter:v1.0.9
-        exec-s3-sync:
-          container:
-            args:
-              - --executor_input
-              - '{{`{{$}}`}}'
-              - --function_to_execute
-              - s3_sync
-            command:
-              - sh
-              - -c
-              - >
-                
-                if ! [ -x "$(command -v pip)" ]; then
-                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
-                fi
-
-
-                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
-                --no-warn-script-location 'load_dotenv==0.1.0' 'botocore==1.35.54'
-                'boto3==1.35.54' && "$0" "$@"
-              - python3
-              - -m
-              - kfp.dsl.executor_main
-            image: quay.io/atarazana/s3_sync:v1.0.5
-        exec-setup-storage:
-          container:
-            args:
-              - --executor_input
-              - '{{`{{$}}`}}'
-              - --function_to_execute
-              - setup_storage
-            command:
-              - sh
-              - -c
-              - >
-                
-                if ! [ -x "$(command -v pip)" ]; then
-                    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
-                fi
-
-
-                PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet
-                --no-warn-script-location 'kubernetes==23.6.0' && "$0" "$@"
-              - python3
-              - -m
-              - kfp.dsl.executor_main
-            image: quay.io/atarazana/setup_storage:v1.0.1
-    pipelineInfo:
-      name: upsert-documents-to-milvus
-    root:
-      dag:
-        tasks:
-          add-chunks-to-milvus:
-            cachingOptions: {}
-            componentRef:
-              name: comp-add-chunks-to-milvus
-            dependentTasks:
-              - docling-chunker
-            inputs:
-              parameters:
-                input_dir_name:
-                  componentInputParameter: chunks_dir_name
-                milvus_collection_name:
-                  componentInputParameter: milvus_collection_name
-                root_mount_path:
-                  componentInputParameter: root_mount_path
-            taskInfo:
-              name: insert_chunks
-          docling-chunker:
-            cachingOptions: {}
-            componentRef:
-              name: comp-docling-chunker
-            dependentTasks:
-              - docling-converter
-            inputs:
-              parameters:
-                input_dir_name:
-                  componentInputParameter: converted_dir_name
-                merge_peers:
-                  componentInputParameter: merge_peers
-                output_dir_name:
-                  componentInputParameter: chunks_dir_name
-                root_mount_path:
-                  componentInputParameter: root_mount_path
-                tokenizer_embed_model_id:
-                  componentInputParameter: tokenizer_embed_model_id
-                tokenizer_max_tokens:
-                  componentInputParameter: tokenizer_max_tokens
-            taskInfo:
-              name: docling_chunker
-          docling-converter:
-            cachingOptions: {}
-            componentRef:
-              name: comp-docling-converter
-            dependentTasks:
-              - s3-sync
-            inputs:
-              parameters:
-                input_dir_name:
-                  componentInputParameter: documents_dir_name
-                output_dir_name:
-                  componentInputParameter: converted_dir_name
-                root_mount_path:
-                  componentInputParameter: root_mount_path
-            taskInfo:
-              name: docling_converter
-          s3-sync:
-            cachingOptions: {}
-            componentRef:
-              name: comp-s3-sync
-            dependentTasks:
-              - setup-storage
-            inputs:
-              parameters:
-                folder:
-                  componentInputParameter: documents_bucket_folder
-                force:
-                  componentInputParameter: force
-                local_folder:
-                  componentInputParameter: documents_dir_name
-                root_mount_path:
-                  componentInputParameter: root_mount_path
-            taskInfo:
-              name: s3_sync
-          setup-storage:
-            cachingOptions:
-              enableCache: true
-            componentRef:
-              name: comp-setup-storage
-            inputs:
-              parameters:
-                pvc_name:
-                  componentInputParameter: documents_pvc_name
-                size_in_gi:
-                  componentInputParameter: documents_pvc_size_in_gi
-            taskInfo:
-              name: setup_storage
-      inputDefinitions:
-        parameters:
-          chunks_dir_name:
-            defaultValue: chunks
-            isOptional: true
-            parameterType: STRING
-          converted_dir_name:
-            defaultValue: converted
-            isOptional: true
-            parameterType: STRING
-          documents_bucket_folder:
-            defaultValue: documents
-            isOptional: true
-            parameterType: STRING
-          documents_dir_name:
-            defaultValue: documents
-            isOptional: true
-            parameterType: STRING
-          documents_pvc_name:
-            defaultValue: documents-pvc
-            isOptional: true
-            parameterType: STRING
-          documents_pvc_size_in_gi:
-            defaultValue: 10
-            isOptional: true
-            parameterType: NUMBER_INTEGER
-          force:
-            defaultValue: false
-            isOptional: true
-            parameterType: BOOLEAN
-          merge_peers:
-            defaultValue: true
-            isOptional: true
-            parameterType: BOOLEAN
-          milvus_collection_name:
-            defaultValue: document_chunks
-            isOptional: true
-            parameterType: STRING
-          root_mount_path:
-            defaultValue: /opt/app-root/src
-            isOptional: true
-            parameterType: STRING
-          tokenizer_embed_model_id:
-            defaultValue: intfloat/multilingual-e5-large
-            isOptional: true
-            parameterType: STRING
-          tokenizer_max_tokens:
-            defaultValue: 476
-            isOptional: true
-            parameterType: NUMBER_INTEGER
-    schemaVersion: 2.1.0
-    sdkVersion: kfp-2.10.1
-  platformSpec:
-    platforms:
-      kubernetes:
-        deploymentSpec:
-          executors:
-            exec-add-chunks-to-milvus:
-              pvcMount:
-                - componentInputParameter: documents_pvc_name
-                  mountPath: /opt/app-root/src
-                  pvcNameParameter:
-                    componentInputParameter: documents_pvc_name
-              secretAsEnv:
-                - keyToEnv:
-                    - envVar: MILVUS_DATABASE
-                      secretKey: MILVUS_DATABASE
-                    - envVar: MILVUS_HOST
-                      secretKey: MILVUS_HOST
-                    - envVar: MILVUS_PORT
-                      secretKey: MILVUS_PORT
-                    - envVar: MILVUS_USERNAME
-                      secretKey: MILVUS_USERNAME
-                    - envVar: MILVUS_PASSWORD
-                      secretKey: MILVUS_PASSWORD
-                  secretName: milvus-connection-documents
-                  secretNameParameter:
-                    runtimeValue:
-                      constant: milvus-connection-documents
-                - keyToEnv:
-                    - envVar: EMBEDDING_MAP_PATH
-                      secretKey: EMBEDDING_MAP_PATH
-                    - envVar: EMBEDDINGS_DEFAULT_MODEL
-                      secretKey: EMBEDDINGS_DEFAULT_MODEL
-                  secretName: rag-pipelines-env
-                  secretNameParameter:
-                    runtimeValue:
-                      constant: rag-pipelines-env
-              secretAsVolume:
-                - mountPath: /opt/app-root/src/data/
-                  optional: false
-                  secretName: rag-pipelines-files
-                  secretNameParameter:
-                    runtimeValue:
-                      constant: rag-pipelines-files
-            exec-docling-chunker:
-              pvcMount:
-                - componentInputParameter: documents_pvc_name
-                  mountPath: /opt/app-root/src
-                  pvcNameParameter:
-                    componentInputParameter: documents_pvc_name
-            exec-docling-converter:
-              pvcMount:
-                - componentInputParameter: documents_pvc_name
-                  mountPath: /opt/app-root/src
-                  pvcNameParameter:
-                    componentInputParameter: documents_pvc_name
-            exec-s3-sync:
-              pvcMount:
-                - componentInputParameter: documents_pvc_name
-                  mountPath: /opt/app-root/src
-                  pvcNameParameter:
-                    componentInputParameter: documents_pvc_name
-              secretAsEnv:
-                - keyToEnv:
-                    - envVar: AWS_ACCESS_KEY_ID
-                      secretKey: AWS_ACCESS_KEY_ID
-                    - envVar: AWS_SECRET_ACCESS_KEY
-                      secretKey: AWS_SECRET_ACCESS_KEY
-                    - envVar: AWS_DEFAULT_REGION
-                      secretKey: AWS_DEFAULT_REGION
-                    - envVar: AWS_S3_BUCKET
-                      secretKey: AWS_S3_BUCKET
-                    - envVar: AWS_S3_ENDPOINT
-                      secretKey: AWS_S3_ENDPOINT
-                  secretName: aws-connection-documents
-                  secretNameParameter:
-                    runtimeValue:
-                      constant: aws-connection-documents
+      schemaVersion: 2.1.0
+      sdkVersion: kfp-2.10.1
+    platform_spec:
+      platforms:
+        kubernetes:
+          deploymentSpec:
+            executors:
+              exec-add-chunks-to-milvus:
+                pvcMount:
+                  - componentInputParameter: documents_pvc_name
+                    mountPath: /opt/app-root/src
+                    pvcNameParameter:
+                      componentInputParameter: documents_pvc_name
+                secretAsEnv:
+                  - keyToEnv:
+                      - envVar: MILVUS_DATABASE
+                        secretKey: MILVUS_DATABASE
+                      - envVar: MILVUS_HOST
+                        secretKey: MILVUS_HOST
+                      - envVar: MILVUS_PORT
+                        secretKey: MILVUS_PORT
+                      - envVar: MILVUS_USERNAME
+                        secretKey: MILVUS_USERNAME
+                      - envVar: MILVUS_PASSWORD
+                        secretKey: MILVUS_PASSWORD
+                    secretName: milvus-connection-documents
+                    secretNameParameter:
+                      runtimeValue:
+                        constant: milvus-connection-documents
+                  - keyToEnv:
+                      - envVar: EMBEDDING_MAP_PATH
+                        secretKey: EMBEDDING_MAP_PATH
+                      - envVar: EMBEDDINGS_DEFAULT_MODEL
+                        secretKey: EMBEDDINGS_DEFAULT_MODEL
+                    secretName: rag-pipelines-env
+                    secretNameParameter:
+                      runtimeValue:
+                        constant: rag-pipelines-env
+                secretAsVolume:
+                  - mountPath: /opt/app-root/src/data/
+                    optional: false
+                    secretName: rag-pipelines-files
+                    secretNameParameter:
+                      runtimeValue:
+                        constant: rag-pipelines-files
+              exec-docling-chunker:
+                pvcMount:
+                  - componentInputParameter: documents_pvc_name
+                    mountPath: /opt/app-root/src
+                    pvcNameParameter:
+                      componentInputParameter: documents_pvc_name
+              exec-docling-converter:
+                pvcMount:
+                  - componentInputParameter: documents_pvc_name
+                    mountPath: /opt/app-root/src
+                    pvcNameParameter:
+                      componentInputParameter: documents_pvc_name
+              exec-s3-sync:
+                pvcMount:
+                  - componentInputParameter: documents_pvc_name
+                    mountPath: /opt/app-root/src
+                    pvcNameParameter:
+                      componentInputParameter: documents_pvc_name
+                secretAsEnv:
+                  - keyToEnv:
+                      - envVar: AWS_ACCESS_KEY_ID
+                        secretKey: AWS_ACCESS_KEY_ID
+                      - envVar: AWS_SECRET_ACCESS_KEY
+                        secretKey: AWS_SECRET_ACCESS_KEY
+                      - envVar: AWS_DEFAULT_REGION
+                        secretKey: AWS_DEFAULT_REGION
+                      - envVar: AWS_S3_BUCKET
+                        secretKey: AWS_S3_BUCKET
+                      - envVar: AWS_S3_ENDPOINT
+                        secretKey: AWS_S3_ENDPOINT
+                    secretName: aws-connection-documents
+                    secretNameParameter:
+                      runtimeValue:
+                        constant: aws-connection-documents
