@@ -172,6 +172,9 @@ spec:
             - python3
             - -m
             - kfp.dsl.executor_main
+            envFrom:
+            - secretRef:
+                name: aws-connection-pipelines
             image: quay.io/atarazana/s3_sync:v1.0.5
         exec-setup-storage:
           container:
