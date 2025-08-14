@@ -137,6 +137,10 @@ spec:
         {{- if .embeddingsModel }}
         - '--trust-remote-code'
         {{- end }}
+        {{- if eq .name "mistral-7b-instruct-v0-3" }}
+        - '--trust-remote-code'
+        - '--tokenizer-mode=auto'
+        {{- end }}
         {{- /* https://docs.vllm.ai/en/latest/features/tool_calling.html#ibm-granite */ -}}
         {{- if .toolCallParser }}
         - '--tool-call-parser'
