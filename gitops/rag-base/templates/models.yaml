@@ -137,7 +137,7 @@ spec:
         {{- if .embeddingsModel }}
         - '--trust-remote-code'
         {{- end }}
-        {{- if eq .name "mistral-7b-instruct-v0-3" }}
+        {{- if or (eq .name "mistral-7b-instruct-v0-3") (eq .name "mistral-7b-instruct-v0-2") }}
         - '--trust-remote-code'
         - '--tokenizer-mode=auto'
         {{- end }}
