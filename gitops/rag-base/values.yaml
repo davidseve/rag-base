@@ -57,10 +57,10 @@ models:
       max: '1'
       min: '1'
       productName: NVIDIA-A10G
-  - name: mistral-7b-instruct-v0-2
-    displayName: Mistral 7B Instruct v0.2
-    model: mistralai/Mistral-7B-Instruct-v0.2
-    image: quay.io/redhat-ai-services/modelcar-catalog:mistral-7b-instruct-v0.2
+  - name: mistral-7b-instruct-v0-3
+    displayName: Mistral 7B Instruct v0.3
+    model: mistralai/Mistral-7B-Instruct-v0.3
+    image: quay.io/redhat-ai-services/modelcar-catalog:mistral-7b-instruct-v0.3
     maxModelLen: '4000'
     runtime:
       templateName: vllm-serving-template
@@ -79,7 +79,7 @@ models:
       productName: NVIDIA-A10G
   - name: llama-3-1-8b-w4a16
     displayName: Llama 3.1 8B
-    model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
+    model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16"
     image: quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-8b-instruct-quantized.w4a16
     maxModelLen: '15000'
     runtime:

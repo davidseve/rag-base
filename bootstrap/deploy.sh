@@ -116,7 +116,7 @@ spec:
               productName: ${GPU_NAME}
           # - name: llama-3-1-8b-w4a16
           #   displayName: Llama 3.1 8B
-          #   model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16"
+          #   model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
           #   image: quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-8b-instruct-quantized.w4a16
           #   maxModelLen: '15000'
           #   runtime:
