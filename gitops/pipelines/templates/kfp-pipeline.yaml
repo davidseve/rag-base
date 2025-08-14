@@ -1,9 +1,9 @@
-apiVersion: pipelines.kubeflow.org/v2beta1
-kind: Pipeline
-metadata:
-  name: kfp-upsert-pl
-  namespace: rag-base
-  annotations:
-    argocd.argoproj.io/sync-wave: "10"
-spec:
-  displayName: kfp-upsert-pl 
+# apiVersion: pipelines.kubeflow.org/v2beta1
+# kind: Pipeline
+# metadata:
+#   name: kfp-upsert-pl
+#   namespace: rag-base
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "10"
+# spec:
+#   displayName: kfp-upsert-pl 

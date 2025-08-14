@@ -94,31 +94,11 @@ spec:
               max: '1'
               min: '1'
               productName: ${GPU_NAME}
-          # - name: mistral-7b-instruct-v0-3
-          #   displayName: Mistral 7B Instruct v0.3
-          #   model: mistralai/Mistral-7B-Instruct-v0.3
-          #   image: quay.io/redhat-ai-services/modelcar-catalog:mistral-7b-instruct-v0.3
-          #   maxModelLen: '4000'
-          #   runtime:
-          #     templateName: vllm-serving-template
-          #     templateDisplayName: vLLM Serving Template
-          #     image: quay.io/modh/vllm:rhoai-2.20-cuda
-          #     resources:
-          #       limits:
-          #         cpu: '8'
-          #         memory: 24Gi
-          #       requests:
-          #         cpu: '6'
-          #         memory: 24Gi
-          #   accelerator:
-          #     max: '1'
-          #     min: '1'
-          #     productName: ${GPU_NAME}
-          - name: llama-3-1-8b-w4a16
-            displayName: Llama 3.1 8B
-            model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16"
-            image: quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-8b-instruct-quantized.w4a16
-            maxModelLen: '15000'
+          - name: mistral-7b-instruct-v0-3
+            displayName: Mistral 7B Instruct v0.3
+            model: mistralai/Mistral-7B-Instruct-v0.3
+            image: quay.io/redhat-ai-services/modelcar-catalog:mistral-7b-instruct-v0.3
+            maxModelLen: '4000'
             runtime:
               templateName: vllm-serving-template
               templateDisplayName: vLLM Serving Template
@@ -134,12 +114,32 @@ spec:
               max: '1'
               min: '1'
               productName: ${GPU_NAME}
-            args:
-              - '--enable-auto-tool-choice'
-              - '--tool-call-parser'
-              - 'llama3_json'
-              - '--chat-template'
-              - '/app/data/template/tool_chat_template_llama3.1_json.jinja'
+          # - name: llama-3-1-8b-w4a16
+          #   displayName: Llama 3.1 8B
+          #   model: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16"
+          #   image: quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-8b-instruct-quantized.w4a16
+          #   maxModelLen: '15000'
+          #   runtime:
+          #     templateName: vllm-serving-template
+          #     templateDisplayName: vLLM Serving Template
+          #     image: quay.io/modh/vllm:rhoai-2.20-cuda
+          #     resources:
+          #       limits:
+          #         cpu: '8'
+          #         memory: 24Gi
+          #       requests:
+          #         cpu: '6'
+          #         memory: 24Gi
+          #   accelerator:
+          #     max: '1'
+          #     min: '1'
+          #     productName: ${GPU_NAME}
+          #   args:
+          #     - '--enable-auto-tool-choice'
+          #     - '--tool-call-parser'
+          #     - 'llama3_json'
+          #     - '--chat-template'
+          #     - '/app/data/template/tool_chat_template_llama3.1_json.jinja'
 
         milvusApplication:
           name: milvus
